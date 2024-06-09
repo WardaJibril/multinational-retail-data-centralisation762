@@ -1,7 +1,6 @@
 import yaml
 from sqlalchemy import create_engine, inspect
-from data_cleaning import DataCleaning
-from data_extraction import user_data_df
+
 class DatabaseConnector():
     def read_db_creds(self):
         #reads db credentails from yaml file
@@ -32,18 +31,3 @@ class DatabaseConnector():
         
             df.to_sql(table_name, con=connection, if_exists='append', index=False)
 
-         
-
-db_connect = DatabaseConnector()
-creds = db_connect.read_db_creds()
-engine = db_connect.init_db_engine(creds)
-
-table_names = db_connect.list_db_names(engine)
-
-print(table_names)
-
-clean = DataCleaning()
-cleaned_user_data = clean.clean_user_data(user_data_df)
-
-upload = DatabaseConnector()
-user_data_upload = upload.upload_to_db(engine, cleaned_user_data, "dim_users")
