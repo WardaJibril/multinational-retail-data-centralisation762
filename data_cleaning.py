@@ -24,10 +24,16 @@ class DataCleaning():
         return user_data_df 
 
 
-    def clean_card_data(self,pdf_data):
-
-        # code to clean pdf
+    def clean_card_data(self,pdf_data_df):
+     # ensure all card details are 13 - 16 characters long
+        pattern = r'\b(?:\d[ -]*?){13,16}\b'
+        pdf_data_df["card_number"] = pdf_data_df["card_number"].str.findall(pattern).apply(lambda x: ' '.join(x) if x else None)
+        # remove rows with null values
+        pdf_data_df = pdf_data_df.dropna()
+        #format dates
+        pdf_data_df["expiry_date"]= pd.to_datetime(pdf_data_df["expiry_date"],format="%m-%d", errors="coerce")
+        pdf_data_df["date_payment_confimred"]= pd.to_datetime(pdf_data_df["date_payment_confimred"],format="%Y-%m-%d", errors="coerce")
         
-        return pdf_data
+        return pdf_data_df
     
    

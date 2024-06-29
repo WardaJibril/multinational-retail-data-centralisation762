@@ -1,5 +1,6 @@
 import yaml
 from sqlalchemy import create_engine, inspect
+import pandas as pd
 
 class DatabaseConnector():
     def read_db_creds(self):
@@ -24,10 +25,6 @@ class DatabaseConnector():
         return table_names
     
     def upload_to_db(self, engine,df,table_name):
-         # needs to uplaod any df into speciifed table 
         
-
-         with engine.connect() as connection:
-        
-            df.to_sql(table_name, con=connection, if_exists='append', index=False)
+            df = pd.read_sql_table(table_name, engine,)
 
