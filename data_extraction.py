@@ -2,8 +2,9 @@ import pandas as pd
 import tabula
 from data_utils import DatabaseConnector
 import requests
-
-
+import boto3
+from io import BytesIO
+from urllib.parse import urlparse
 
 class DataExtractor():
     
@@ -54,8 +55,40 @@ class DataExtractor():
 
         store_data_df = pd.DataFrame(store_data)
         return store_data_df
+    
+    def extract_from_s3_URI(self,address):
+        
+        # Parse the S3 address to extract bucket name and key
+        address_parts = address.replace("s3://", "").split("/")
+        bucket_name = address_parts[0]
+        object_key = "/".join(address_parts[1:])
+        
+        s3 = boto3.client('s3')
+        
+        # Download the file from S3 to a BytesIO object
+        response = s3.get_object(Bucket=bucket_name, Key=object_key)
+        data = response['Body'].read()
+        
+        # Read the CSV data into a pandas DataFrame
+        product_data_df = pd.read_csv(BytesIO(data))
+        
+        return product_data_df
+    
+    def extract_from_s3_http(self,address):
 
-data_extract = DataExtractor()
-#number_of_stores = data_extract.list_number_of_stores()
-store_data_df = data_extract.retrieve_store_data(" https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{}")
-store_data_df.to_csv('store_data.csv', index=False)
+        parsed_url = urlparse(address)
+       
+        bucket_name = parsed_url.netloc.split('.')[0] 
+        object_key = parsed_url.path.lstrip('/') 
+
+        s3 = boto3.client('s3')
+        
+        response = s3.get_object(Bucket=bucket_name, Key=object_key)
+        data = response['Body'].read()
+        
+        # Read the CSV data into a pandas DataFrame
+        date_details_df = pd.read_json(BytesIO(data))
+
+        return date_details_df
+    
+

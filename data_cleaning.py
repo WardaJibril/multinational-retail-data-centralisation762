@@ -33,7 +33,55 @@ class DataCleaning():
         #format dates
         pdf_data_df["expiry_date"]= pd.to_datetime(pdf_data_df["expiry_date"],format="%m-%d", errors="coerce")
         pdf_data_df["date_payment_confimred"]= pd.to_datetime(pdf_data_df["date_payment_confimred"],format="%Y-%m-%d", errors="coerce")
-        
+
         return pdf_data_df
-    
+      
+    def clean_store_data(self,store_data_df):
+        # Convert 'staff_number' column to numeric 
+        store_data_df['staff_numbers'] = pd.to_numeric(store_data_df['staff_numbers'], errors='coerce')
+
+        #all longitude an latidute entries are no longer than 5 decimal points
+        store_data_df['latitude'] = store_data_df['latitude'].round(5)
+        store_data_df['longitude'] = store_data_df['longitude'].round(5)
+
+        return store_data_df
    
+    def convert_product_weights(self,product_data_df):
+      
+        conversion_factors = {
+            'kg': 1,
+            'g': 0.001,
+            'ml': 0.001  
+        }
+        
+        def convert_weight(weight_str):
+            if weight_str[-2:].lower() == 'kg':
+                return float(weight_str[:-2])  
+            elif weight_str[-1].lower() == 'g':
+                return float(weight_str[:-1]) * conversion_factors['g'] 
+            elif weight_str[-2:].lower() == 'ml':
+                return float(weight_str[:-2]) * conversion_factors['ml']
+            else:
+                return None  
+        
+        product_data_df['weight'] = product_data_df['weight'].apply(convert_weight)
+        
+        return product_data_df
+    
+    def clean_orders_data (self,orders_data_df):
+         orders_data_df = orders_data_df.drop(['first_name', 'last_name', '1'], axis=1, errors='ignore')
+        
+         return orders_data_df
+    
+    def clean_date_data (self,date_details_df):
+        
+        date_details_df['timestamp'] = pd.to_datetime(df['timestamp'], format='%H:%M:%S').dt.time
+
+        date_details_df['month'] = df['month'].astype(int)
+
+        date_details_df['year'] = df['year'].astype(int)
+
+        date_details_df['day'] = df['day'].astype(int)
+
+        return date_details_df
+    
