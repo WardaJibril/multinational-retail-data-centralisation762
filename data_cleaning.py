@@ -74,13 +74,13 @@ class DataCleaning():
     
     def clean_date_data (self,date_details_df):
         
-        date_details_df['timestamp'] = pd.to_datetime(df['timestamp'], format='%H:%M:%S').dt.time
+        date_details_df['timestamp'] = pd.to_datetime(date_details_df['timestamp'], format='%H:%M:%S').dt.time
 
-        date_details_df['month'] = df['month'].astype(int)
+        date_details_df['month'] = date_details_df['month'].astype(int)
 
-        date_details_df['year'] = df['year'].astype(int)
+        date_details_df['year'] = date_details_df['year'].astype(int)
 
-        date_details_df['day'] = df['day'].astype(int)
+        date_details_df['day'] = date_details_df['day'].astype(int)
 
         return date_details_df
     

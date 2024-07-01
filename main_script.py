@@ -2,7 +2,7 @@ from data_cleaning import DataCleaning
 from data_extraction import DataExtractor
 from data_utils import DatabaseConnector
 
-# def main()
+
 db_connect = DatabaseConnector()
 
 cloud_db_creds = db_connect.read_cloud_db_creds()
@@ -43,5 +43,5 @@ product_data_upload = upload.upload_to_db(upload_engine,cleaned_product_data,"di
 order_data_upload = upload.upload_to_db(upload_engine, cleaned_order_data,"orders_table")
 date_details_upload = upload.upload_to_db(upload_engine, cleaned_date_data, "dim_date_times")
 
-#if __name__ == "__main__":
-    #main()
+
+
