@@ -12,7 +12,7 @@ class DataExtractor():
 
         # Get the engine from DatabaseConnector
         db_connect = DatabaseConnector()
-        creds = db_connect.read_db_creds()
+        creds = db_connect.read_cloud_db_creds()
         engine = db_connect.init_db_engine(creds)
         
 
@@ -91,4 +91,3 @@ class DataExtractor():
 
         return date_details_df
     
-

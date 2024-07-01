@@ -22,8 +22,7 @@ class DataCleaning():
         user_data_df["date_of_birth"] = pd.to_datetime(user_data_df["date_of_birth"],format="%Y-%m-%d", errors="coerce")
 
         return user_data_df 
-
-
+    
     def clean_card_data(self,pdf_data_df):
      # ensure all card details are 13 - 16 characters long
         pattern = r'\b(?:\d[ -]*?){13,16}\b'
