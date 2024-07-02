@@ -33,4 +33,7 @@ class DatabaseConnector():
     def upload_to_db(self, engine,df,table_name,if_exists='replace', index=False):
         
             df.to_sql(table_name, engine,if_exists=if_exists, index=index)
+            print(f"Upload of {table_name} successful")
+
+        
 

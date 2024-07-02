@@ -10,7 +10,7 @@ local_db_creds = db_connect.read_local_db_creds()
 
 extract_engine = db_connect.init_db_engine(cloud_db_creds)
 upload_engine = db_connect.init_db_engine(local_db_creds)
-#table_names = db_connect.list_db_names(engine)
+
 
 #extract the data
 data_extract = DataExtractor()

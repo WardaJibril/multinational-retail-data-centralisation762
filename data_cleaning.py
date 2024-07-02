@@ -24,20 +24,20 @@ class DataCleaning():
         return user_data_df 
     
     def clean_card_data(self,pdf_data_df):
-     # ensure all card details are 13 - 16 characters long
-        pattern = r'\b(?:\d[ -]*?){13,16}\b'
-        pdf_data_df["card_number"] = pdf_data_df["card_number"].str.findall(pattern).apply(lambda x: ' '.join(x) if x else None)
+     
         # remove rows with null values
         pdf_data_df = pdf_data_df.dropna()
         #format dates
         pdf_data_df["expiry_date"]= pd.to_datetime(pdf_data_df["expiry_date"],format="%m-%d", errors="coerce")
-        pdf_data_df["date_payment_confimred"]= pd.to_datetime(pdf_data_df["date_payment_confimred"],format="%Y-%m-%d", errors="coerce")
+        
 
         return pdf_data_df
       
     def clean_store_data(self,store_data_df):
-        # Convert 'staff_number' column to numeric 
+        # Convert column to numeric 
         store_data_df['staff_numbers'] = pd.to_numeric(store_data_df['staff_numbers'], errors='coerce')
+        store_data_df['latitude'] = pd.to_numeric(store_data_df['latitude'], errors='coerce')
+        store_data_df['longitude'] = pd.to_numeric(store_data_df['longitude'], errors='coerce')
 
         #all longitude an latidute entries are no longer than 5 decimal points
         store_data_df['latitude'] = store_data_df['latitude'].round(5)
@@ -52,18 +52,30 @@ class DataCleaning():
             'g': 0.001,
             'ml': 0.001  
         }
+       
         
         def convert_weight(weight_str):
-            if weight_str[-2:].lower() == 'kg':
-                return float(weight_str[:-2])  
-            elif weight_str[-1].lower() == 'g':
-                return float(weight_str[:-1]) * conversion_factors['g'] 
-            elif weight_str[-2:].lower() == 'ml':
-                return float(weight_str[:-2]) * conversion_factors['ml']
-            else:
-                return None  
+
+            if isinstance(weight_str, str) and len(weight_str) >= 2:
+
+                weight_str = weight_str.strip()
+
+                unit = weight_str[-2:].lower() if weight_str[-2:].lower() in conversion_factors else weight_str[-1].lower()
+                
+                try:
+                    if unit == 'kg':
+                        return float(weight_str[:-2].strip())
+                    elif unit == 'g':
+                        return float(weight_str[:-1].strip()) * conversion_factors['g']
+                    elif unit == 'ml':
+                        return float(weight_str[:-2].strip()) * conversion_factors['ml']
+                except ValueError:
+                    return None  
+            return None  
         
         product_data_df['weight'] = product_data_df['weight'].apply(convert_weight)
+       
+        product_data_df = product_data_df.dropna(subset=['weight'])
         
         return product_data_df
     
@@ -74,13 +86,17 @@ class DataCleaning():
     
     def clean_date_data (self,date_details_df):
         
-        date_details_df['timestamp'] = pd.to_datetime(date_details_df['timestamp'], format='%H:%M:%S').dt.time
+        try:
+            date_details_df['timestamp'] = pd.to_datetime(date_details_df['timestamp'], format='%H:%M:%S').dt.time
+        except ValueError:
+            # Handle ValueError (e.g., log, skip, or set to NaN)
+            date_details_df['timestamp'] = pd.NaT
 
-        date_details_df['month'] = date_details_df['month'].astype(int)
+        date_details_df['month'] = pd.to_numeric(date_details_df['month'], errors='coerce')
 
-        date_details_df['year'] = date_details_df['year'].astype(int)
+        date_details_df['year'] = pd.to_numeric(date_details_df['year'], errors='coerce')
 
-        date_details_df['day'] = date_details_df['day'].astype(int)
+        date_details_df['day'] = pd.to_numeric(date_details_df['day'], errors='coerce')
 
         return date_details_df
     

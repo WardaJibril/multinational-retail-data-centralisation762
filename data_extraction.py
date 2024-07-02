@@ -28,7 +28,9 @@ class DataExtractor():
 
         link = "https://data-handling-public.s3.eu-west-1.amazonaws.com/card_details.pdf"
 
-        pdf_data_df = tabula.read_pdf(link, pages="all")
+        pdf_data = tabula.read_pdf(link, pages="all")
+
+        pdf_data_df = pd.concat(pdf_data, ignore_index=True)
 
         return pdf_data_df
 
@@ -90,4 +92,5 @@ class DataExtractor():
         date_details_df = pd.read_json(BytesIO(data))
 
         return date_details_df
-    
+
+
