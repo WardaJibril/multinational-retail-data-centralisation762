@@ -1,4 +1,6 @@
 import pandas as pd 
+import uuid
+
 class DataCleaning():
     def clean_user_data(self, user_data_df):
         # null values
@@ -27,8 +29,12 @@ class DataCleaning():
      
         # remove rows with null values
         pdf_data_df = pdf_data_df.dropna()
-        #format dates
-        pdf_data_df["expiry_date"]= pd.to_datetime(pdf_data_df["expiry_date"],format="%m-%d", errors="coerce")
+
+        try:
+            pdf_data_df['date_payment_confirmed'] = pd.to_datetime(pdf_data_df['date_payment_confirmed'], format='%H:%M:%S').dt.time
+        except ValueError:
+            
+            pdf_data_df['date_payment_confirmed'] = pd.NaT
         
 
         return pdf_data_df
@@ -38,11 +44,14 @@ class DataCleaning():
         store_data_df['staff_numbers'] = pd.to_numeric(store_data_df['staff_numbers'], errors='coerce')
         store_data_df['latitude'] = pd.to_numeric(store_data_df['latitude'], errors='coerce')
         store_data_df['longitude'] = pd.to_numeric(store_data_df['longitude'], errors='coerce')
+        store_data_df['lat'] = pd.to_numeric(store_data_df['lat'], errors='coerce')
 
         #all longitude an latidute entries are no longer than 5 decimal points
         store_data_df['latitude'] = store_data_df['latitude'].round(5)
         store_data_df['longitude'] = store_data_df['longitude'].round(5)
-
+        
+        store_data_df['opening_date'] = pd.to_datetime(store_data_df['opening_date'], errors='coerce')
+        
         return store_data_df
    
     def convert_product_weights(self,product_data_df):
@@ -89,8 +98,17 @@ class DataCleaning():
         try:
             date_details_df['timestamp'] = pd.to_datetime(date_details_df['timestamp'], format='%H:%M:%S').dt.time
         except ValueError:
-            # Handle ValueError (e.g., log, skip, or set to NaN)
+            
             date_details_df['timestamp'] = pd.NaT
+        
+        def clean_uuid(uuid_str):
+            try:
+              return uuid.UUID(uuid_str)
+            except ValueError:
+              return None  # Return None for invalid UUID strings
+
+
+        date_details_df['date_uuid'] = date_details_df['date_uuid'].apply(clean_uuid)
 
         date_details_df['month'] = pd.to_numeric(date_details_df['month'], errors='coerce')
 
