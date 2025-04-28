@@ -1,18 +1,70 @@
-# multinational-retail-data-centralisation762
+# Sales Data Engineering Pipeline
 
-This project aims to produce a system that stores the current company data in a centralised database location so that then can be queried to get up-to-date metrics for the business.
+## Project Overview
+This project demonstrates a complete end-to-end **data engineering pipeline** that ingests, cleans, transforms, and loads **sales data** into a **PostgreSQL data warehouse**. It simulates a real-world **business intelligence pipeline** where raw data from multiple sources is processed and stored for advanced analytics. The goal is to showcase **ETL workflows**, **data warehousing**, and **SQL analytics** to produce actionable business insights.
 
-# file structure of project
+### Key Learnings:
+- **Data transformation** and **cleaning** using **Python**
+- Data loading into a **PostgreSQL data warehouse** using **SQLAlchemy**
+- Advanced **SQL analytics** for deriving insights from sales data
+- Integration of **AWS S3** for cloud-based storage
 
-There are four python files within this project. The main_script.py is the only python file that needs to be run. This file contains all the executable code.
-the other three files contain the methods and classes for connecting, extracting and cleaning the data. 
+---
 
-The data is stored in multiple formats and each require a a diffrent extraction method as shown in the data_extraction.py. The data is stored in an S3 objects, AWS relation databases, local databases, csv files, pdf files. Also, some of the data is on a web page that can retreived using an API.
+## Tools & Technologies Used
+- **Python**: For data extraction, transformation, and cleaning
+- **PostgreSQL**: Centralized data warehouse for structured data
+- **Pandas**: Data wrangling and manipulation
+- **AWS S3**: Cloud storage for CSV and JSON data files
+- **Boto3**: AWS SDK for Python to interface with **AWS S3**
+- **REST APIs**: For fetching data from external sources
+- **SQL**: Advanced queries for analytics and reporting
+- **Git & GitHub**: Version control for project development and collaboration
 
-To clean the data, pandas dataframes are used as shown in the data_cleaning.py file.
+---
 
-The data_utils.py file has all the neccessary function to connect to local and cloud databases to either extract or load the data to the approriate location by use of an engine.
+## Pipeline Workflow
 
-There is an Entity relationship diagram included in this project to help clarify th relationships between the table siwithon the database. 
+### Data Sources
+The pipeline processes data from multiple sources:
+- **User**, **card**, **store**, and **product data** sourced from:
+  - **AWS RDS Databases** (for user and sales data)
+  - **RESTful APIs** (for store details)
+  - **AWS S3 Buckets** (for CSV & JSON data)
 
-The SQL script folder contains the sql code used to create the star based database schema.
+### Data Extraction
+Data is extracted using the following methods:
+- **PostgreSQL**: Using **psycopg2** to query relational databases.
+- **AWS S3**: Using **boto3** to interact with **S3** and download **CSV/JSON** files.
+- **REST APIs**: Using **requests** to fetch store details from external APIs.
+
+### Data Cleaning (ETL)
+Data transformation and cleaning are performed through custom Python classes:
+- **Standardizing Data Types**: Ensured consistency in types like **UUID**, **VARCHAR**, and **FLOAT**.
+- **Unit Conversion**: Converted weights from pounds to kilograms where necessary.
+- **Missing Values**: Handled missing data and ensured no nulls in critical columns.
+- **Data Integrity**: Applied referential integrity and consistency in data relationships (e.g., foreign key constraints for joins).
+
+### Data Loading
+Cleaned DataFrames are loaded into **PostgreSQL** using **SQLAlchemy**, with the data structured in a **star schema** for easier querying:
+- **dim_users** – User details
+- **dim_store_details** – Store metadata
+- **dim_products** – Product information
+- **dim_card_details** – Card usage details
+- **dim_date_times** – Date and time breakdown for sales
+- **orders_table** (fact table) – Contains transaction data
+
+---
+
+## Analytical SQL Highlights
+In the **analytics_queries.sql** file, I executed complex **SQL queries** to generate business insights, including:
+- 🔹 **Top months per year by sales volume**
+- 🔹 **Staff headcount by country**
+- 🔹 **Store-type performance in Germany**
+- 🔹 **Average time between sales** using **LEAD()** + **INTERVAL**
+- 🔹 **Sales contribution by store type**
+
+---
+
+## Conclusion
+This project demonstrates an efficient and scalable **sales data engineering pipeline** using industry-standard tools like **Python**, **PostgreSQL**, and **AWS S3**. It provides insights into **data cleaning**, **transformation**, **storage**, and **SQL analytics** to drive business decisions.
